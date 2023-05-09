@@ -4,7 +4,7 @@ Simple Command Shell With Bypassed Shell
 ## Features
 - Function Execution
 - Create File From URL
-- System Info (Next Updated)
+- System Info (Updated in v1.1)
 
 ## Screenshot
 ![ecchi](https://raw.githubusercontent.com/dmzhari/Ecchi-Command-Shell/main/Image%20Shell.png "My Home Command Shell")

@@ -373,7 +373,7 @@ $ecchishell = new EcchiShell;
                     <?= $ecchishell->getServerSoftware() ?>
                 </span></p>
             <p>Information System : <span>
-                    <?= $ecchishell->getInformationSytem() ?>
+                    <?= $ecchishell->getInformationSystem() ?>
                 </span></p>
         </div>
     </div>

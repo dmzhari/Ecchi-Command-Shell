@@ -303,7 +303,7 @@ class EcchiShell
 $ecchishell = new EcchiShell;
 ?>
 <!DOCTYPE html>
-<ht lang="en">
+<html lang="en">
 
     <head>
         <!-- Primary Meta Tags -->
@@ -572,4 +572,4 @@ $ecchishell = new EcchiShell;
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 
-</ht ml>
+</html>

